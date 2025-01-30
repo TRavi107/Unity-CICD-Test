@@ -10,7 +10,7 @@ on:
 jobs:
   testAllModes:
     name: Test in ${{ matrix.testMode }}
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
