@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test Project
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    name: Build for Windows
+    runs-on: windows-latest
+
+    steps:
+      # Checkout repository with Git LFS
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Activate Unity License
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v4
+        with:
+          username: ${{ secrets.UNITY_EMAIL }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+          serial: ${{ secrets.UNITY_SERIAL }}
+
+      # Build the project
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        with:
+          targetPlatform: Win64
+          projectPath: .  # Use '.' if project is at the root of the repo
+
+      # Upload the build artifact
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Build
+          path: build/Windows
